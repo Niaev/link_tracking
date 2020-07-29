@@ -114,24 +114,3 @@ class Crawler():
         sl = scrape_list(self.links)
         
         return ld + sl
-
-if __name__ == '__main__':
-    crwlr = Crawler('https://pt.wikipedia.org/')
-    
-    '''
-    print(f"url:   {crwlr.url}")
-    print(f"http:  {crwlr.http}")
-    print(f"html:  {crwlr.html}")
-    print(f"r:     {crwlr.r}")
-
-    crwlr.track()
-
-    print(f"links: {crwlr.links}")
-
-    d = crwlr.scrape()
-    print(d['content'])
-    '''
-
-    crwlr.track()
-
-    print(crwlr.scrape_links())
