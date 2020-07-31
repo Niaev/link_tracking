@@ -1,6 +1,6 @@
-# link_traking
+# link_tracking
 
-**Link Tracking** é um script escrito em **Python** que utiliza métodos de ***Web Scrapping***, com as bibliotecas **urllib** e **BeautifulSoup**. Possui este nome pois busca e armazena todos os links possíveis - e o título das suas respectvas páginas - dentro de uma página Web.
+**link_tracking** é um script escrito em **Python** que utiliza métodos de ***Web Scrapping***, com as bibliotecas **urllib** e **BeautifulSoup**. Possui este nome pois busca e armazena todos os links possíveis - e o título das suas respectvas páginas - dentro de uma página Web.
 
 ## Como funciona
 
