@@ -40,6 +40,9 @@ class Crawler():
         * http
             * `str`
             * url HTTP protocol (HTTP or HTTPS)
+        * host
+            * `str`
+            * hostname
         * html
             * `http.client.HTTPResponse`
             * based in `self.url`
@@ -54,7 +57,9 @@ class Crawler():
     def __init__(self, url):
 
         self.url = url
-        self.http = url.split('//')[0]
+        url_splitted = url.split('//')
+        self.http = url_splitted[0]
+        self.host = url_splitted[1].split('/')[0]
 
         try:
             self.html = urlopen(self.url)
@@ -89,11 +94,13 @@ class Crawler():
                 s = s.group(1)
                 # adding just valid links
                 if re.match(r'[#]',s):
-                    links.append(f"{self.url}{s}")
+                    links.append(f'{self.url}{s}')
+                elif re.match(r'\./',s):
+                    links.append(f'{self.url}{s[1:]}')
                 elif re.match(r'//',s):
-                    links.append(f"{self.http}{s}")
+                    links.append(f'{self.http}{s}')
                 elif re.match(r'/',s):
-                    links.append(f"{self.http[0:-1]}{s}")
+                    links.append(f'{self.http}//{self.host}{s}')
                 elif re.match(r'https{0,1}://',s):
                     links.append(s)
 
