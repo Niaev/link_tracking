@@ -1,18 +1,21 @@
-# imports
-## crawling
+# general imports
+import re
+
+# web crawling imports
 from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
 from bs4 import BeautifulSoup, Comment
-## others
-import re
 
 def scrape_list(links):
-    """
-        Scrape a list of links to get page content, description and title, then return a list of dictionaries
-        with this elements
-    """
+    '''
+        Scrape a list of links to get page content, description and 
+        title, then return a list of dictionaries with this elements
+    '''
+
+    # list of page properties dictionaries
     ld = []
 
+    # scrape all valid links
     for l in links:
         try:
             c = Crawler(l)
@@ -24,42 +27,67 @@ def scrape_list(links):
 
     return ld
 
-
 class Crawler():
-    """
-        Class that receives an url and use urllib and bs4 to get page information and with
-        functions to track and scrape links
-    """
+    '''
+        Class that receives an url and use urllib and bs4 to get page 
+        information and with functions to track and scrape links
+
+        ### Attributes
+
+        * url
+            * `str`
+            * crawler primal url
+        * http
+            * `str`
+            * url HTTP protocol (HTTP or HTTPS)
+        * html
+            * `http.client.HTTPResponse`
+            * based in `self.url`
+        * r
+            * `bs4.BeautifulSoup`
+            * uses `self.html` as markup and `html5lib` as parser
+        * links
+            * `list`
+            * all tracked valid links
+    '''
 
     def __init__(self, url):
-        """
-            Set class attributes
-        """
+
         self.url = url
         self.http = url.split('//')[0]
 
         try:
             self.html = urlopen(self.url)
-        except ValueError: raise ValueError('Invalid URL')
-        except HTTPError as e: raise e
-        except URLError: raise URLError('Server unavailabe or incorrect domain name')
+        except ValueError: 
+            raise ValueError('Invalid URL')
+        except HTTPError as e: 
+            raise e
+        except URLError: 
+            raise URLError('Server unavailabe or incorrect domain name')
         else:
             self.r = BeautifulSoup(self.html.read(), 'html5lib')
 
     def track(self, include_self=False):
-        """
+        '''
             Crawl through the page source to find all valid links
-        """
-        a_tags = self.r.findAll('a')
+        '''
 
-        p = r'href="([\w\.\/#-:;?=~]*)"'
+        # tracked links list and adding `self.url` if requested
         links = []
         if include_self: links.append(self.url)
+
+        # get all `<a>` tags on the page source code
+        a_tags = self.r.findAll('a')
+
+        # regex href link pattern
+        p = r'href="([\w\.\/#-:;?=~]*)"'
         for a in a_tags:
+            # search for the pattern in each `<a>`
             s = re.search(p,str(a))
             if s:
+                # s is now the link itself
                 s = s.group(1)
-                m = re.match(r'[#/]',s)
+                # adding just valid links
                 if re.match(r'[#]',s):
                     links.append(f"{self.url}{s}")
                 elif re.match(r'//',s):
@@ -72,9 +100,12 @@ class Crawler():
         self.links = links
 
     def scrape(self):
-        """
-            Scrape page content, description and title, then return a dictionary with this scraped elements
-        """
+        '''
+            Scrape `self.url` page content, description and title, then 
+            return a dictionary with this scraped elements
+        '''
+
+        # page properties dictionary
         d = {
                 'url': self.url,
                 'title': self.r.title.string if hasattr(self.r.title, 'string') else self.url,
@@ -82,12 +113,15 @@ class Crawler():
                 'content' : ''
         }
 
+        # try to find `<meta>` description tag
         try:
             description = self.r.find('meta',attras={'name':'description'})['content']
-        except TypeError: pass
+        except TypeError: pass  # in case of error, just proceed with empty string
         else: d['description'] = description
 
         body = self.r.find('body')
+
+        # removing `<script>`, `<noscript>` and comments (purifying page content)
         for script in body.findAll('script'):
             script.decompose()
         for noscript in body.findAll('noscript'):
@@ -99,18 +133,22 @@ class Crawler():
         return d
 
     def scrape_links(self, scrap_self=False):
-        """
-            Scrape self.links to get page content, description and title, then return a list of dictionaries
-            with this elements
-        """
+        '''
+            Scrape self.links to get page content, description and 
+            title, then return a list of dictionaries with this
+            elements
+        '''
+
+        # list of page properties dictionaries
         ld = []
 
-        if scrap_self:
-            ld.append(self.scrape())
+        # scrape `self` if requested
+        if scrap_self: ld.append(self.scrape())
         
+        # if `self.links` exist, links were not tracked, yet
         if not hasattr(self,'links'):
-            return None # Links were not tracked, yet
+            return None
 
+        # scrape all valid links
         sl = scrape_list(self.links)
-        
         return ld + sl
