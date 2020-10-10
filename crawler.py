@@ -43,6 +43,9 @@ class Crawler():
         * host
             * `str`
             * hostname
+        * dir
+            * `str`
+            * `self.url` without filename
         * html
             * `http.client.HTTPResponse`
             * based in `self.url`
@@ -58,6 +61,7 @@ class Crawler():
 
         self.url = url
         url_splitted = url.split('//')
+        self.dir = '/'.join(self.url.split('/')[:-1]) if '.' in self.url else self.url
         self.http = url_splitted[0]
         self.host = url_splitted[1].split('/')[0]
 
@@ -92,12 +96,11 @@ class Crawler():
             if s:
                 # s is now the link itself
                 s = s.group(1)
-                s = '/'.join(s.split('/')[:-1]) if '.' in s else s
                 # adding just valid links
                 if re.match(r'[#]',s):
                     links.append(f'{self.url}{s}')
                 elif re.match(r'\./',s):
-                    links.append(f'{self.url}{s[1:]}')
+                    links.append(f'{self.dir}{s[1:]}')
                 elif re.match(r'//',s):
                     links.append(f'{self.http}{s}')
                 elif re.match(r'/',s):
