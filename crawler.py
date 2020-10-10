@@ -92,6 +92,7 @@ class Crawler():
             if s:
                 # s is now the link itself
                 s = s.group(1)
+                s = '/'.join(s.split('/')[:-1])
                 # adding just valid links
                 if re.match(r'[#]',s):
                     links.append(f'{self.url}{s}')
