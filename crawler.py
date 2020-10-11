@@ -55,6 +55,22 @@ class Crawler():
         * links
             * `list`
             * all tracked valid links
+
+        ### Methods
+
+        * track:
+            * Crawl through the page source to find all valid links
+        * scrape:
+            * Scrape `self.url` page content, description and title, then 
+            return a dictionary with this scraped elements
+        * scrape_links:
+            * Scrape self.links to get page content, description and 
+            title, then return a list of dictionaries with this
+            elements
+        * track_with_depht:
+            * Crawl through the page source to find all valid links
+            and crawl to the valid links pages by a given depht
+            then return a full list with all this links
     '''
 
     def __init__(self, url):
