@@ -40,3 +40,10 @@ class Indexer():
                 html = urlopen(link)
             except (ValueError, HTTPError, URLError) as e:
                 self.links.pop(i)
+    
+    def order_scraped_links(self, pages):
+        '''
+            Orders list of dictionaries pages
+        '''
+        
+        return sorted(pages, key=lambda k: k['title'])
