@@ -68,11 +68,11 @@ class Crawler():
         try:
             self.html = urlopen(self.url)
         except ValueError: 
-            raise ValueError('Invalid URL')
+            raise ValueError(f'Invalid URL: {self.url}')
         except HTTPError as e: 
             raise e
         except URLError: 
-            raise URLError('Server unavailabe or incorrect domain name')
+            raise URLError(f'Server unavailabe or incorrect domain name: {self.url}')
         else:
             self.r = BeautifulSoup(self.html.read(), 'html5lib')
 
@@ -163,3 +163,25 @@ class Crawler():
         # scrape all valid links
         sl = scrape_list(self.links)
         return ld + sl
+
+    def track_with_depht(self, depht):
+        '''
+            Crawl through the page source to find all valid links
+            and crawl to the valid links pages by a given depht
+            then return a full list with all this links
+        '''
+
+        # if `self.links` exist, track
+        if not hasattr(self,'links'):
+            self.track()
+
+        if depht == 0:
+            return self.links
+
+        links = self.links.copy()
+        for link in self.links: 
+            # for each link, access the page and track 
+            c = Crawler(link)
+            links.extend(c.track_with_depht(depht-1))
+
+        return links
