@@ -97,3 +97,41 @@ class Indexer():
 
         db.commit()
         db.close()
+
+    def store_pages(self, dbname, pages):
+        '''
+            Store given pages
+        '''
+
+        # order pages
+        to_store = self.order_scraped_links(pages)
+
+        # database connection
+        db = sqlite3.connect(dbname)
+        c = db.cursor()
+
+        # checking if connected database has pages table
+        c.execute('''SELECT name FROM sqlite_master
+            WHERE type='table'
+            ORDER BY name;''')
+        tables = c.fetchall()
+        has_pages = False
+        for table in tables:
+            if 'pages' in table:
+                has_pages = True
+                break
+
+        # raise exception if it hasn't
+        if not has_pages:
+            raise Exception('Given database don\'t have "pages" table')
+
+        # store pages if it's all ok
+        for page in to_store:
+            c.execute(f'''INSERT INTO pages
+                (url, title, description, content)
+                VALUES
+                (?, ?, ?, ?);
+            ''', (page['url'], page['title'], page['description'], page['content']))       
+
+        db.commit()
+        db.close()
