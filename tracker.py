@@ -11,10 +11,10 @@ if len(sys.argv) == 1:
     print('No parameters were given')
     sys.exit()
 elif len(sys.argv) == 2 and sys.argv[1] != 'help!':
-    depht = 2
+    depth = 2
     seeds_file = sys.argv[1]
 elif len(sys.argv) == 3:
-    depht = int(sys.argv[2])
+    depth = int(sys.argv[2])
     seeds_file = sys.argv[1]
 elif len(sys.argv) == 2 and sys.argv[1] == 'help!':
     print('''
@@ -27,10 +27,10 @@ link_tracking is a web crawling tool that requires a list of seed links to start
 
 it's simple to use. just execute it and then you can give parameters
 
-    $ python3 tracker.py SEEDS_FILE [DEPHT]
+    $ python3 tracker.py SEEDS_FILE [DEPTH]
 
 SEEDS_FILE is the path of a text file with a few links in it, one link by line
-DEPHT is a optional parameter. it is an integer number that defined de depht of the crawling inside each seed link. the default DEPHT is 5
+DEPTH is a optional parameter. it is an integer number that defined de depth of the crawling inside each seed link. the default DEPTH is 5
 
 or you can type help! as a parameter to get this message in your terminal
 
@@ -51,10 +51,10 @@ l = []
 # main crawler instance
 crawler = Crawler(seeds[0])
 
-# crawling seeds with given depht
+# crawling seeds with given depth
 for seed in seeds:
     c = Crawler(seed)
-    c.links = c.track_with_depht(depht)
+    c.links = c.track_with_depth(depth)
     # update main links list with tracked links
     l.extend(c.links)
 

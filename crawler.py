@@ -67,9 +67,9 @@ class Crawler():
             * Scrape self.links to get page content, description and 
             title, then return a list of dictionaries with this
             elements
-        * track_with_depht:
+        * track_with_depth:
             * Crawl through the page source to find all valid links
-            and crawl to the valid links pages by a given depht
+            and crawl to the valid links pages by a given depth
             then return a full list with all this links
     '''
 
@@ -180,10 +180,10 @@ class Crawler():
         sl = scrape_list(self.links)
         return ld + sl
 
-    def track_with_depht(self, depht):
+    def track_with_depth(self, depth):
         '''
             Crawl through the page source to find all valid links
-            and crawl to the valid links pages by a given depht
+            and crawl to the valid links pages by a given depth
             then return a full list with all this links
         '''
 
@@ -191,13 +191,13 @@ class Crawler():
         if not hasattr(self,'links'):
             self.track()
 
-        if depht == 0:
+        if depth == 0:
             return self.links
 
         links = self.links.copy()
         for link in self.links: 
             # for each link, access the page and track 
             c = Crawler(link)
-            links.extend(c.track_with_depht(depht-1))
+            links.extend(c.track_with_depth(depth-1))
 
         return links
