@@ -17,7 +17,19 @@ class Indexer():
         * links
             * `list`
             * list of links
-        
+
+        ### Methods
+
+        * remove_duplis:
+            * Remove duplicates in `self.links`
+        * valid_links:
+            * Maintains only valid links in `self.links` by removing invalid ones
+        * order_scraped_links:
+            * Orders list of dictionaries pages
+        * store_links:
+            * Store given links or just `self.links`
+        * store_pages:
+            * Store given pages
     '''
 
     def __init__(self, links):
