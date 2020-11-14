@@ -1,6 +1,9 @@
 # general imports
 import re
 
+# database manipulation imports
+import sqlite3
+
 # web crawling imports
 from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
@@ -35,7 +38,6 @@ class Indexer():
         '''
 
         for i,link in enumerate(self.links):
-            print(i)
             try:
                 html = urlopen(link)
             except (ValueError, HTTPError, URLError) as e:
@@ -47,3 +49,51 @@ class Indexer():
         '''
         
         return sorted(pages, key=lambda k: k['title'])
+
+    def store_links(self, dbname, links=None, both=False):
+        '''
+            Store given links or just `self.links`
+        '''
+
+        # copy of links to store
+        to_store = self.links.copy()
+
+        # handle given parameters
+        if links and both:
+            to_store.extend(links)
+            self.remove_duplis()
+            self.valid_links()
+        elif links:
+            to_store = links
+            self.remove_duplis()
+            self.valid_links()
+
+        # database connection
+        db = sqlite3.connect(dbname)
+        c = db.cursor()
+
+        # checking if connected database has links table
+        c.execute('''SELECT name FROM sqlite_master
+            WHERE type='table'
+            ORDER BY name;''')
+        tables = c.fetchall()
+        has_links = False
+        for table in tables:
+            if 'links' in table:
+                has_links = True
+                break
+
+        # raise exception if it hasn't
+        if not has_links:
+            raise Exception('Given database don\'t have "links" table')
+
+        # store links if it's all ok
+        for link in to_store:
+            c.execute(f'''INSERT INTO links
+                (link)
+                VALUES
+                (?);
+            ''', (link,))       
+
+        db.commit()
+        db.close()
