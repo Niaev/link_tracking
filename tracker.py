@@ -1,18 +1,20 @@
 # imports
 ## link_tracking modules
 from crawler import Crawler, scrape_list
+from indexer import Indexer
 ## others
-import sys, os
+import sys
+import os
 
 # parameters handling
 if len(sys.argv) == 1: 
     print('No parameters were given')
     sys.exit()
 elif len(sys.argv) == 2 and sys.argv[1] != 'help!':
-    depht = 5
+    depht = 2
     seeds_file = sys.argv[1]
 elif len(sys.argv) == 3:
-    depht = sys.argv[2]
+    depht = int(sys.argv[2])
     seeds_file = sys.argv[1]
 elif len(sys.argv) == 2 and sys.argv[1] == 'help!':
     print('''
@@ -46,9 +48,24 @@ except FileNotFoundError:
 # links list
 l = []
 
-# crawling seeds
+# main crawler instance
+crawler = Crawler(seeds[0])
+
+# crawling seeds with given depht
 for seed in seeds:
     c = Crawler(seed)
-    c.track()
-    l = l + c.links
-print(l)
+    c.links = c.track_with_depht(depht)
+    # update main links list with tracked links
+    l.extend(c.links)
+
+# main indexer instance with all tracked links
+indexer = Indexer(l)
+crawler.links = indexer.links
+
+# get links page content and sort contents
+pages = crawler.scrape_links()
+pages = indexer.order_scraped_links(pages)
+
+# storing links and pages on sqlite database data/pages.db
+indexer.store_links('data/pages.db')
+indexer.store_pages('data/pages.db',pages)
