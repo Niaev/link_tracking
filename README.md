@@ -1,6 +1,6 @@
 # **link_tracking**
 
-A simple Python script tool and package that uses web crawling concepts to find links and pages around the internet ans SQLite databases to store found data.
+A simple Python script tool and package that uses web crawling concepts to find links and pages around the internet and SQLite databases to store found data.
 
 ## **Using**
 
@@ -10,11 +10,11 @@ You can clone this Git repository and add it to your project to use **link_track
 $ git clone https://github.com/Niaev/link_tracking.git
 ```
 
-**This package is not available at Python Package Index already.**
+**This package is not available at Python Package Index yet.**
 
 ### **`tracker` script**
 
-This script can be found in the root of this repository. The simple how to use:
+This script can be found in the root of this repository. Follow the example below:
 
 ```sh
 $ python3 tracker.py SEEDS_FILE [depth]
