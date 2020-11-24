@@ -1,68 +1,52 @@
-# link_tracking
+# **link_tracking**
 
-**link_tracking** é um script escrito em **Python** que utiliza métodos de ***Web Scrapping***, com as bibliotecas **urllib** e **BeautifulSoup**. Possui este nome pois busca e armazena todos os links possíveis - e o título das suas respectvas páginas - dentro de uma página Web.
+A simple Python script tool and package that uses web crawling concepts to find links and pages around the internet and SQLite databases to store found data.
 
-## Como funciona
+## **Using**
 
-O script, ao ser executado, solicita uma URL, que será a URL da página que o usuário deseja retirar os links. O dado URL deverá ser válido e será utilizado para que o **BeautifulSoup** leia a página a que ele se refere, recebendo os elementos do HTML5. Depois o script irá buscar somente pelas tag de link ```<a></a>``` e então será extrído somente o link. Veja o exemplo:
+You can clone this Git repository and add it to your project to use **link_tracking** [as a package](#as-a-package) or to use the [`tracker.py`](#tracker-script) script.
 
-Tag retornada pelo **BeautifulSoup**:
-```
-<a href="https://www.github.com/" id="link-github" class="link" target="_blank">Github</a>
-```
-
-Link extraído da tag:
-```
-www.github.com
+```sh
+$ git clone https://github.com/Niaev/link_tracking.git
 ```
 
-O links são então tratados e armazenados em uma lista. Eles são tratados pois eles serão acessados pelo próprio script mais a frente e o usuário, depois que os links forem armazenados em um documento de texto, pode acessar. Agora, como eles são tratados: alguns links podem ter referencial relativo ou absoluto, o que pode dificultar o acesso pelo script e pelo usuário.
+**This package is not available at Python Package Index yet.**
 
-Dentro da página do [GitHub](https://www.github.com/) existe um link para o [Sobre o GitHub](https://www.github.com/about/). Se o link dentro da página estiver se referindo de maneira absoluta, não é um problema, então não precisa ser tratado, se estiver se referindo de maneira relativa, deve ser tratado. Eis aqui um exemplo do caso de referancial relativo:
-```
-<a href="/about/">Sobre</a>
-```
+### **`tracker` script**
 
-O links extraído será:
-```
-/about/
+This script can be found in the root of this repository. Follow the example below:
+
+```sh
+$ python3 tracker.py SEEDS_FILE [depth]
 ```
 
-O script não sabe que esse ```/about/``` é da página do GitHub e o usuário pode não saber, caso queira acessar. Sendo assim, esse link é tratado pelo script para que fique assim:
+* `SEEDS_FILE` - a file path, referring to a text file with a list of internet links. Example:
+
 ```
-https://www.github.com/about/
-```
-
-Existem outros tipos de link que são tratados, como links para âncoras ou para outras páginas, mas sem usar o ```http(s)://```, que pode fazer o **BeautifulSoup** não compreender como URL, assim impossibilitando o acesso à página.
-
-O script acessa os links que extraiu para captar informações, como título da página a que o link se refere.
-
-Feito isso, o script armazena tudo em um arquivo de texto, ```links.txt```.
-
-## Como usar
-
-Para utilizar o **Link Tracking**, é necessário que você instale os [requisitos](#requisitos) e baixe o conteúdo desse repositório clicando em ```Clone or Download``` e em seguida em ```Download ZIP```, ou você pode cloná-lo, executando o seguinte comando em seu terminal:
-```
-$ git clone git://github.com/Niaev/link_tracking
+http://link-one.com/
+https://link.org/two
+...
 ```
 
-### Requisitos
-* [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/) - ```pip install beautifulsoup4``` ou ```python -m pip install beautifulsoup4```
+* `DEPTH` - is an optional integer number (default is **2**), defining the link tracking depth - that is how many times it will enter in a child page link and search the link in there in a recursive way
 
-### Executando o script
+The script will track links using your seeds and scrape its respective pages, then store in a SQLite database `data/pages.db`.
 
-No terminal de seu sistema operacional, navegue até o diretório em que o script se encontra e o execute:
+### **as a package**
+
+It has two modules: `crawler` and `indexer`.
+
+`crawler` has some functions and the `Crawler` class, responsible for web crawling.
+
 ```
-$ python __init__.py
-```
-
-Ou abra o ```__init__.py``` utilizando o [**IDLE Python**](https://www.python.org/downloads/).
-
-Ao executar, a seguinte mensagem deve aparecer:
-```
-Digite a URL da página que deseja raspar: 
+Class that receives an url and use urllib and bs4 to get page 
+information and with functions to track and scrape links
 ```
 
-Então você digita ou cola a URL que deseja raspar e basta aguardar um tempo para verificar os links no arquivo ```links.txt```
+`indexer` has just the `Indexer` class, responsible for handling, organizing and storing the collected data;
 
-## Faça bom uso :)
+```
+Class that receives a list of links to organize and index
+```
+
+The code is well documented with docstrings and comments. A more deep documentation can be found in this repository wiki - **not yet available**.
