@@ -81,11 +81,20 @@ class Crawler():
         self.http = url_splitted[0]
         self.host = url_splitted[1].split('/')[0]
 
+        # fix bug of urllib trying to open links with '##'
+        # r'^.*[#]+$'
+        if re.match(r'^.*##$',self.url):
+            print(self.url)
+            self.url = self.url[:-2]
+
         try:
             self.html = urlopen(self.url)
+        except UnicodeEncodeError as e:
+            raise e
         except ValueError: 
             raise ValueError(f'Invalid URL: {self.url}')
         except HTTPError as e: 
+            print(self.url)
             raise e
         except URLError: 
             raise URLError(f'Server unavailabe or incorrect domain name: {self.url}')
@@ -107,11 +116,16 @@ class Crawler():
         # regex href link pattern
         p = r'href="([\w\.\/#-:;?=~]*)"'
         for a in a_tags:
+            # temporary condition - exclude tor links
+            if '.onion' in str(a):
+                continue
+            
             # search for the pattern in each `<a>`
             s = re.search(p,str(a))
             if s:
                 # s is now the link itself
                 s = s.group(1)
+                
                 # adding just valid links
                 if re.match(r'[#]',s):
                     links.append(f'{self.url}{s}')
@@ -197,7 +211,14 @@ class Crawler():
         links = self.links.copy()
         for link in self.links: 
             # for each link, access the page and track 
-            c = Crawler(link)
+            try:
+                c = Crawler(link)
+            except HTTPError as e: # prevent from stopping the application because of unavailable service
+                if e.code == 503:
+                    continue
+            except UnicodeEncodeError: # prevent from stopping the application because of special chars
+                print('UNICODE ERROR -- GIVING UP')
+                continue
             links.extend(c.track_with_depth(depth-1))
 
         return links
