@@ -219,6 +219,9 @@ class Crawler():
             except UnicodeEncodeError: # prevent from stopping the application because of special chars
                 print('UNICODE ERROR -- GIVING UP')
                 continue
+            except URLError: # prevent from stopping the applicaiton because of URL and connection problems
+                print('URL ERROR -- GIVING UP')
+                continue
             links.extend(c.track_with_depth(depth-1))
 
         return links
