@@ -1,22 +1,22 @@
 """Builds SQLite database file"""
 
-# imports
-import sqlite3, os
+import os
+import sqlite3
 
 def build(filename):
     os.system('mkdir data')
 
-    # database connection
+    # Database connection
     db = sqlite3.connect(f'data/{filename}.db')
     c = db.cursor()
 
-    # create links table
+    # Create links table
     c.execute('''CREATE TABLE IF NOT EXISTS links (
             id INTEGER PRIMARY KEY,
             link TEXT
         );''')
 
-    # create pages table
+    # Create pages table
     c.execute('''CREATE TABLE IF NOT EXISTS pages (
             id INTEGER PRIMARY KEY,
             url TEXT,
@@ -25,7 +25,7 @@ def build(filename):
             content TEXT
         );''')
 
-    # show tables
+    # Show tables
     c.execute('''SELECT name FROM sqlite_master
         WHERE type='table'
         ORDER BY name;''')
@@ -35,7 +35,7 @@ def build(filename):
         print(f'  - {table[0]}')
     print('')
 
-    # show columns from the crated tables
+    # Show columns from the crated tables
     c.execute('''PRAGMA table_info(links);''')
     f = c.fetchall()
     print('links')

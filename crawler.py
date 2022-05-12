@@ -1,9 +1,9 @@
 """Crawls through  the web to find links and scrapes webpages"""
 
-# general imports
+# General imports
 import re
 
-# web crawling imports
+# Web crawling imports
 from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
 from bs4 import BeautifulSoup, Comment
@@ -14,10 +14,10 @@ def scrape_list(links):
         title, then return a list of dictionaries with this elements
     '''
 
-    # list of page properties dictionaries
+    # List of page properties dictionaries
     ld = []
 
-    # scrape all valid links
+    # Scrape all valid links
     for l in links:
         try:
             c = Crawler(l)
@@ -29,7 +29,7 @@ def scrape_list(links):
 
     return ld
 
-class Crawler():
+class Crawler:
     '''
         Class that receives an url and use urllib and bs4 to get page 
         information and with functions to track and scrape links
@@ -76,14 +76,13 @@ class Crawler():
     '''
 
     def __init__(self, url):
-
         self.url = url
         url_splitted = url.split('//')
         self.dir = '/'.join(self.url.split('/')[:-1]) if '.' in self.url else self.url
         self.http = url_splitted[0]
         self.host = url_splitted[1].split('/')[0]
 
-        # fix bug of urllib trying to open links with '##'
+        # Fix bug of urllib trying to open links with '##'
         # r'^.*[#]+$'
         if re.match(r'^.*##$',self.url):
             print(self.url)
@@ -108,27 +107,27 @@ class Crawler():
             Crawl through the page source to find all valid links
         '''
 
-        # tracked links list and adding `self.url` if requested
+        # Tracked links list and adding `self.url` if requested
         links = []
         if include_self: links.append(self.url)
 
-        # get all `<a>` tags on the page source code
+        # Get all `<a>` tags on the page source code
         a_tags = self.r.findAll('a')
 
-        # regex href link pattern
+        # Regex href link pattern
         p = r'href="([\w\.\/#-:;?=~]*)"'
         for a in a_tags:
-            # temporary condition - exclude tor links
+            # Temporary condition - exclude tor links
             if '.onion' in str(a):
                 continue
             
-            # search for the pattern in each `<a>`
+            # Search for the pattern in each `<a>`
             s = re.search(p,str(a))
             if s:
                 # s is now the link itself
                 s = s.group(1)
                 
-                # adding just valid links
+                # Adding just valid links
                 if re.match(r'[#]',s):
                     links.append(f'{self.url}{s}')
                 elif re.match(r'\./',s):
@@ -148,7 +147,7 @@ class Crawler():
             return a dictionary with this scraped elements
         '''
 
-        # page properties dictionary
+        # Page properties dictionary
         d = {
                 'url': self.url,
                 'title': self.r.title.string if hasattr(self.r.title, 'string') else self.url,
@@ -156,15 +155,17 @@ class Crawler():
                 'content' : ''
         }
 
-        # try to find `<meta>` description tag
+        # Try to find `<meta>` description tag
         try:
             description = self.r.find('meta',attras={'name':'description'})['content']
-        except TypeError: pass  # in case of error, just proceed with empty string
+        except TypeError: 
+            # In case of error, just proceed with empty string
+            pass  
         else: d['description'] = description
 
         body = self.r.find('body')
 
-        # removing `<script>`, `<noscript>` and comments (purifying page content)
+        # Removing `<script>`, `<noscript>` and comments
         for script in body.findAll('script'):
             script.decompose()
         for noscript in body.findAll('noscript'):
@@ -182,17 +183,17 @@ class Crawler():
             elements
         '''
 
-        # list of page properties dictionaries
+        # List of page properties dictionaries
         ld = []
 
-        # scrape `self` if requested
+        # Scrape `self` if requested
         if scrap_self: ld.append(self.scrape())
         
-        # if `self.links` exist, links were not tracked, yet
+        # If `self.links` exist, links were not tracked, yet
         if not hasattr(self,'links'):
             return None
 
-        # scrape all valid links
+        # Scrape all valid links
         sl = scrape_list(self.links)
         return ld + sl
 
@@ -203,7 +204,7 @@ class Crawler():
             then return a full list with all this links
         '''
 
-        # if `self.links` exist, track
+        # If `self.links` exist, track
         if not hasattr(self,'links'):
             self.track()
 
@@ -212,13 +213,17 @@ class Crawler():
 
         links = self.links.copy()
         for link in self.links: 
-            # for each link, access the page and track 
+            # For each link, access the page and track 
             try:
                 c = Crawler(link)
-            except HTTPError as e: # prevent from stopping the application because of unavailable service
+            except HTTPError as e: 
+                # Prevent from stopping the application because of 
+                # Unavailable service
                 if e.code == 503:
                     continue
-            except UnicodeEncodeError: # prevent from stopping the application because of special chars
+            except UnicodeEncodeError: 
+                # Prevent from stopping the application because of 
+                # Special chars
                 print('UNICODE ERROR -- GIVING UP')
                 continue
             links.extend(c.track_with_depth(depth-1))

@@ -1,13 +1,11 @@
 """Finds, organizes and stores links"""
 
-# imports
-## link_tracking modules
-from crawler import Crawler
-from indexer import Indexer
-## others
 import sys
 
-# parameters handling
+from crawler import Crawler
+from indexer import Indexer
+
+# Parameters handling
 if len(sys.argv) == 1: 
     print('No parameters were given')
     sys.exit()
@@ -38,7 +36,7 @@ or you can type help! as a parameter to get this message in your terminal
             ''')
     sys.exit()
 
-# reading seeds file
+# Reading seeds file
 try:
     with open(seeds_file, 'r') as f:
         seeds = f.read().split('\n')[0:-1]
@@ -46,27 +44,27 @@ except FileNotFoundError:
     print('seeds file was not found')
     sys.exit()
 
-# links list
+# Links list
 l = []
 
-# main crawler instance
+# Main crawler instance
 crawler = Crawler(seeds[0])
 
-# crawling seeds with given depth
+# Crawling seeds with given depth
 for seed in seeds:
     c = Crawler(seed)
     c.links = c.track_with_depth(depth)
-    # update main links list with tracked links
+    # Update main links list with tracked links
     l.extend(c.links)
 
-# main indexer instance with all tracked links
+# Main indexer instance with all tracked links
 indexer = Indexer(l)
 crawler.links = indexer.links
 
-# get links page content and sort contents
+# Get links page content and sort contents
 pages = crawler.scrape_links()
 pages = indexer.order_scraped_links(pages)
 
-# storing links and pages on sqlite database data/pages.db
+# Storing links and pages on sqlite database data/pages.db
 indexer.store_links('data/pages.db')
 indexer.store_pages('data/pages.db',pages)

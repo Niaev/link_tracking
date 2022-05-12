@@ -1,13 +1,13 @@
 """Organizes lists of links"""
 
-# database manipulation imports
+# Database manipulation imports
 import sqlite3
 
-# web crawling imports
+# Web crawling imports
 from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
 
-class Indexer():
+class Indexer:
     '''
         Class that receives a list of links to organize and index
 
@@ -32,7 +32,6 @@ class Indexer():
     '''
 
     def __init__(self, links):
-
         self.links = links
         self.remove_duplis()
         self.valid_links()
@@ -66,10 +65,10 @@ class Indexer():
             Store given links or just `self.links`
         '''
 
-        # copy of links to store
+        # Copy of links to store
         to_store = self.links.copy()
 
-        # handle given parameters
+        # Handle given parameters
         if links and both:
             to_store.extend(links)
             self.remove_duplis()
@@ -79,11 +78,11 @@ class Indexer():
             self.remove_duplis()
             self.valid_links()
 
-        # database connection
+        # Database connection
         db = sqlite3.connect(dbname)
         c = db.cursor()
 
-        # checking if connected database has links table
+        # Checking if connected database has links table
         c.execute('''SELECT name FROM sqlite_master
             WHERE type='table'
             ORDER BY name;''')
@@ -94,11 +93,11 @@ class Indexer():
                 has_links = True
                 break
 
-        # raise exception if it hasn't
+        # Raise exception if it hasn't
         if not has_links:
             raise Exception('Given database don\'t have "links" table')
 
-        # store links if it's all ok
+        # Store links if it's all ok
         for link in to_store:
             c.execute(f'''INSERT INTO links
                 (link)
@@ -114,14 +113,14 @@ class Indexer():
             Store given pages
         '''
 
-        # order pages
+        # Order pages
         to_store = self.order_scraped_links(pages)
 
-        # database connection
+        # Database connection
         db = sqlite3.connect(dbname)
         c = db.cursor()
 
-        # checking if connected database has pages table
+        # Checking if connected database has pages table
         c.execute('''SELECT name FROM sqlite_master
             WHERE type='table'
             ORDER BY name;''')
@@ -132,11 +131,11 @@ class Indexer():
                 has_pages = True
                 break
 
-        # raise exception if it hasn't
+        # Raise exception if it hasn't
         if not has_pages:
             raise Exception('Given database don\'t have "pages" table')
 
-        # store pages if it's all ok
+        # Store pages if it's all ok
         for page in to_store:
             c.execute(f'''INSERT INTO pages
                 (url, title, description, content)
