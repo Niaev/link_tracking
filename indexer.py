@@ -1,3 +1,5 @@
+"""Organizes lists of links"""
+
 # database manipulation imports
 import sqlite3
 

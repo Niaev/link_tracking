@@ -1,3 +1,5 @@
+"""Builds SQLite database file"""
+
 # imports
 import sqlite3, os
 

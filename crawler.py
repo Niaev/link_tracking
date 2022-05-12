@@ -1,3 +1,5 @@
+"""Crawls through  the web to find links and scrapes webpages"""
+
 # general imports
 import re
 

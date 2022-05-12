@@ -1,3 +1,5 @@
+"""Finds, organizes and stores links"""
+
 # imports
 ## link_tracking modules
 from crawler import Crawler
