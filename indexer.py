@@ -1,6 +1,3 @@
-# general imports
-import re
-
 # database manipulation imports
 import sqlite3
 

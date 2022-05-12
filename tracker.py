@@ -1,10 +1,9 @@
 # imports
 ## link_tracking modules
-from crawler import Crawler, scrape_list
+from crawler import Crawler
 from indexer import Indexer
 ## others
 import sys
-import os
 
 # parameters handling
 if len(sys.argv) == 1: 
