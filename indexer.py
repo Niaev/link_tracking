@@ -8,28 +8,11 @@ from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
 
 class Indexer:
-    '''
-        Class that receives a list of links to organize and index
+    """Class that receives a list of links to organize and index
 
-        ### Attributes
-
-        * links
-            * `list`
-            * list of links
-
-        ### Methods
-
-        * remove_duplis:
-            * Remove duplicates in `self.links`
-        * valid_links:
-            * Maintains only valid links in `self.links` by removing invalid ones
-        * order_scraped_links:
-            * Orders list of dictionaries pages
-        * store_links:
-            * Store given links or just `self.links`
-        * store_pages:
-            * Store given pages
-    '''
+    Instance Variables:
+    links {list} -- Containing links in strings
+    """
 
     def __init__(self, links):
         self.links = links
@@ -37,15 +20,11 @@ class Indexer:
         self.valid_links()
 
     def remove_duplis(self):
-        '''
-            Remove duplicates in `self.links`
-        '''
+        """Remove duplicates in self.links"""
         self.links = list(set(self.links))
     
     def valid_links(self):
-        '''
-            Maintains only valid links in `self.links` by removing invalid ones
-        '''
+        """Maintains only valid links in self.links"""
 
         for i,link in enumerate(self.links):
             try:
@@ -54,16 +33,30 @@ class Indexer:
                 self.links.pop(i)
     
     def order_scraped_links(self, pages):
-        '''
-            Orders list of dictionaries pages
-        '''
+        """Sort list of dictionaries pages by title
+
+        Arguments:
+        pages {list} -- Containing dicts of pages
+
+        Returns:
+        {list} -- List of pages sorted by title
+        """
         
         return sorted(pages, key=lambda k: k['title'])
 
     def store_links(self, dbname, links=None, both=False):
-        '''
-            Store given links or just `self.links`
-        '''
+        """Store given links or just self.links
+
+        Arguments:
+        dbname {str} -- Path to SQLite database file
+        links {list} -- Containing links in strings (default None)
+        both {bool} -- Defines if both self.links and links parameter
+                       should be stored (default False)
+
+        Raises:
+        Exception -- When the given database doesn't have the "links" 
+                     table
+        """
 
         # Copy of links to store
         to_store = self.links.copy()
@@ -109,9 +102,16 @@ class Indexer:
         db.close()
 
     def store_pages(self, dbname, pages):
-        '''
-            Store given pages
-        '''
+        """Store given pages
+
+        Arguments:
+        dbname {str} -- Path to SQLite database file
+        pages {list} -- Containing dicts of pages
+
+        Raises:
+        Exception -- When the given database doesn't have the "pages" 
+                     table
+        """
 
         # Order pages
         to_store = self.order_scraped_links(pages)
